@@ -1,0 +1,61 @@
+- name: set timezone to Europe/Kiev
+  timezone:
+    name: Europe/Kiev
+
+- name: Ensure NTP-related packages are installed(ntp).
+  package:
+    name: ntp
+    state: present
+
+- name: Ensure NTPdate packages are installed(ntp).
+  package:
+    name: ntpdate
+    state: present
+
+
+- name: Creates script directory
+  file: path=/root/scripts state=directory
+
+- name: start ntp
+  service:
+    name: ntpd
+    state: started
+    enabled: yes
+
+- name: Copy ntp confit
+  template:
+    src: "ntp.conf.j2"
+    dest: "/etc/ntp.conf"
+  notify: restart ntp
+
+- name: Copy ntp script
+  template:
+    src: "ntp.sh.j2"
+    dest: "/root/scripts/ntp.sh"
+    owner: root
+    group: "root"
+    mode: 0750
+  when: pref_ntp != "skip"
+
+- name: enable cron
+  cron: 
+    name: "ntp sync"
+    user: "root"
+    minute: "00"
+    hour: "00"
+    job: "/root/scripts/ntp.sh"
+    cron_file: /etc/crontab
+  when: pref_ntp != "skip"
+
+- name: disable cron
+  cron:
+    name: "ntp sync"
+    user: "root"
+    minute: "00"
+    hour: "00"
+    job: "/root/scripts/ntp.sh"
+    cron_file: /etc/crontab
+    disabled: yes
+  when: pref_ntp == "skip"
+
+

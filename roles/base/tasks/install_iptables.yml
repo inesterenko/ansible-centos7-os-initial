@@ -1,0 +1,15 @@
+- name: Disable the firewalld service (on RHEL, if configured).
+  service:
+    name: firewalld
+    state: stopped
+    enabled: false
+
+- name: Ensure iptables is present.
+  package: name=iptables-services state=present
+
+- name: Enable and run iptables
+  service:
+    name: iptables
+    state: started
+    enabled: true
+

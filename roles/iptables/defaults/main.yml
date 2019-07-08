@@ -1,0 +1,8 @@
+iptables_save: 0
+iptables_reject_all:
+
+iptables_allow_all:
+   - 127.0.0.0/8
+
+iptables_allow_ports:
+   - 22

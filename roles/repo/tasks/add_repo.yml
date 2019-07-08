@@ -1,0 +1,30 @@
+- pause:
+    prompt: "You probably try to run full playbook. Enter for continue"
+    echo: yes
+
+- name: Install epel repository
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - epel-release
+    - yum-plugin-priorities
+
+- name: "Enable plugin"
+  ini_file: dest=/etc/yum/pluginconf.d/priorities.conf section=main option=enabled value=1
+
+- name: "Set repository priorities"
+  ini_file:
+    dest: "/etc/yum.repos.d/{{ item.0.name }}.repo"
+    section: "{{ item.1.name }}"
+    option: priority
+    value: "{{ item.1.priority }}"
+  with_subelements:
+    - "{{ repositories }}"
+    - priorities
+
+- name: upgrade all packages
+  yum:
+    name: '*'
+    state: latest
+

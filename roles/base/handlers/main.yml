@@ -1,0 +1,12 @@
+---
+# handlers file for initial
+- name: restart ntp
+  service:
+    name: ntpd
+    state: restarted
+
+- name: restart ssh
+  action: service name=sshd state=restarted
+
+- name: update grub2
+  shell: grub2-mkconfig -o /boot/grub2/grub.cfg

@@ -1,0 +1,45 @@
+#Root
+
+change_root_pass: "yes"
+##Create hash password --> mkpasswd --method=sha-512
+root_pass: "<< password generated --> mkpasswd --method=sha-512 >>"
+
+admin_group: wheel
+
+## These users will be created into all servers
+## All users with state: present will be created and state absent will be deleted
+full_admin_list:
+  - name: "Admin"
+    username: "<< user >>"
+    password: "<< password generated --> mkpasswd --method=sha-512 >>"
+    keys:
+      active:
+        - "<< present id_rsa.pub >>"
+        - "<< present another id_rsa.pub >>"
+#      disabled:
+#        - "absent id_rsa.pub"
+    shell: "/bin/bash"
+    state: present
+
+ - name: "Admin2"
+    username: "<< user >>"
+    password: "<< password generated --> mkpasswd --method=sha-512 >>"
+    keys:
+      active:
+        - "<< present id_rsa.pub >>"
+        - "<< present another id_rsa.pub >>"
+#      disabled:
+#        - "absent id_rsa.pub"
+    shell: "/bin/bash"
+    state: present
+
+  - name: "Delete user"
+    username: "deleted_user"
+    state: absent
+
+
+  - name: "Delete user2"
+    username: "deleted_user"
+    state: absent
+
+

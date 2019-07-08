@@ -1,0 +1,3 @@
+#!/bin/bash
+/etc/init.d/ntp stop ntpdate {{ pref_ntp }} /etc/init.d/ntp start
+

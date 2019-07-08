@@ -1,0 +1,104 @@
+- name: Default policy before configure
+  iptables:
+    chain: INPUT
+    policy: ACCEPT
+
+
+- name: flush INPUT
+  iptables:
+     chain: INPUT
+     flush: yes
+
+- name: flush OUTPUT
+  iptables:
+     chain: OUTPUT       
+     flush: yes
+
+- name: flush FORWARD
+  iptables:
+     chain: FORWARD    
+     flush: yes
+
+
+- name: Allowed incoming packages
+  iptables:
+    chain: INPUT
+    jump: ACCEPT
+    ctstate: ESTABLISHED,RELATED
+    comment: "Allowed established"
+
+- name: Reject all for ip lists 
+  iptables:
+    chain: INPUT
+    jump: REJECT
+    source: "{{ item }}"
+    comment: "Reject all"
+  loop: "{{ iptables_reject_all }}"
+  ignore_errors: yes
+
+- name: Allow all ip lists
+  iptables: 
+    chain: INPUT
+    jump: ACCEPT
+    source: "{{ item }}"
+    comment: "Allowed all"
+  loop: "{{ iptables_allow_all }}"
+
+- name: Allow tcp ports
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "{{ item }}"
+    jump: ACCEPT
+    comment: "Allowed ports"
+  loop: "{{ iptables_allow_ports }}"
+  ignore_errors: yes  
+
+- name: Accept from zabbix
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: 10050
+    jump: ACCEPT
+    source: 185.36.196.179
+    comment: Zabbix server allowed
+
+- name: Accept from zabbix 2
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: 10051
+    jump: ACCEPT
+    source: 185.36.196.179
+    comment: Zabbix server allowed
+
+- name: Allowed all to lo
+  iptables:
+    chain: OUTPUT
+    jump: ACCEPT
+    out_interface: lo
+    comment: "Allowed from lo"
+
+- name: Allowed output from lo
+  iptables:
+    chain: INPUT
+    jump: ACCEPT
+    in_interface: lo
+    comment: "Allowed from lo"
+    
+- name: Default policy
+  iptables:
+    chain: INPUT
+    policy: DROP
+
+- name: Saving config ....
+  command: service iptables save
+  when: iptables_save == "1"
+  
+- debug:
+    msg: "Config SAVE. Congratulations"
+  when: iptables_save == "1"
+
+- debug:
+    msg: "Config not SAVE. Be careful"
+  when: iptables_save != "1"

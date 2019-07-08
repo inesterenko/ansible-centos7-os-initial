@@ -1,0 +1,2 @@
+hostname: "override_hostname"
+vm_tools_install: 1

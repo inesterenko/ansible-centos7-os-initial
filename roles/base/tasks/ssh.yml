@@ -1,0 +1,19 @@
+- name: Creates ssh backup directory
+  file: path=/root/backups state=directory
+
+- name: Creates ssh backup directory
+  file: path=/root/backups/ssh state=directory
+
+- name: Backup ssh
+  copy: src=/etc/ssh/sshd_config dest=/root/backups/ssh/sshd_config_{{ansible_date_time.date}}_in_{{ansible_date_time.time}}
+
+
+- name: Configuring sshd
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart ssh
+

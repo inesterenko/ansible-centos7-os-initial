@@ -1,0 +1,12 @@
+- name: install vm tools
+  yum:
+    name: 'open-vm-tools'
+    state: latest
+  when: vm_tools_install == 1
+
+- name: Start tools and enable it
+  service:
+    name: vmtoolsd
+    enabled: yes 
+    state: started
+  when: vm_tools_install == 1

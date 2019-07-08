@@ -1,0 +1,16 @@
+- hosts: tbot
+  vars_files:
+    - vars/base_vars.yml
+    - vars/users_vars.yml
+    - vars/iptables_vars.yml
+  roles:
+    - role: repo
+      tags: ["repo"]
+    - role: base
+      tags: ["base"]
+    - role: users
+      tags: ["users"]    
+    - role: iptables
+      tags: ["iptables"]
+
+

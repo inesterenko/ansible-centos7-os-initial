@@ -1,0 +1,78 @@
+- name: Install essential packages
+  yum:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - curl
+    - rsync
+    - sudo
+    - wget
+    - net-tools
+
+
+- name: Ensure sudo group is present
+  group:
+    name: sudo
+    state: present
+
+
+- name: Delete privillege
+  lineinfile:
+    dest: /etc/sudoers
+    state: absent
+    regexp: "^%wheel"
+    line: "%wheel ALL=(ALL:ALL) ALL"
+    validate: "/usr/sbin/visudo -cf %s"
+
+- name: Ensure sudo group has sudo privileges
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: "^%wheel"
+    line: "%wheel    ALL=(ALL:ALL) NOPASSWD: ALL"
+    validate: "/usr/sbin/visudo -cf %s"
+
+
+- name: change root password
+  user:
+    name: "root"
+    password: "{{ root_pass }}"
+    update_password: always
+  when: change_root_pass == "yes"
+
+- name: Setup all users
+  user:
+    name: "{{ item.username }}"
+    password: "{{ item.password | default('{{ root_pass }}') }}"
+    state: "{{ item.state | default('present') }}"
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    group: "{{ admin_group }}"
+    remove: yes
+    update_password: always
+  when: item.username is defined
+  with_items:
+    - "{{ full_admin_list }}"
+
+- name: Add SSH-keys to users
+  authorized_key:
+    user: "{{ item.0.username }}"
+    key: "{{ item.1 }}"
+  with_subelements:
+    - "{{ full_admin_list }}"
+    - keys.active
+    - flags:
+      skip_missing: True
+  when: item.0.state != "absent"
+
+- name: Remove old SSH-keys from users
+  authorized_key:
+    user: "{{ item.0.username }}"
+    key: "{{ item.1 }}"
+    state: absent
+  with_subelements:
+    - "{{ full_admin_list }}"
+    - keys.disabled
+    - flags:
+      skip_missing: True
+  when: item.0.state != "absent"

@@ -1,0 +1,21 @@
+---
+# defaults file for repo
+repositories:
+  - name: CentOS-Base
+    priorities:
+      - name: base
+        priority: 1
+      - name: updates
+        priority: 1
+      - name: extras
+        priority: 1
+      - name: centosplus
+        priority: 2
+  - name: epel
+    priorities:
+      - name: epel
+        priority: 10
+      - name: epel-debuginfo
+        priority: 11
+      - name: epel-source
+        priority: 11

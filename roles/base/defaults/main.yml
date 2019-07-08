@@ -1,0 +1,25 @@
+---
+# defaults file for base
+#Hostname
+hostname: "ChangeME"
+
+#vmtools
+vm_tools_install: 0
+
+#NTP
+pref_ntp: skip
+ntp_area: 'ua'
+ntp_servers:
+  - "0{{ '.' + ntp_area if ntp_area else '' }}.pool.ntp.org iburst"
+  - "1{{ '.' + ntp_area if ntp_area else '' }}.pool.ntp.org iburst"
+  - "2{{ '.' + ntp_area if ntp_area else '' }}.pool.ntp.org iburst"
+  - "3{{ '.' + ntp_area if ntp_area else '' }}.pool.ntp.org iburst"
+
+
+#SSH
+PermitRootLogin: "without-password"
+PasswordAuthentication: "yes"
+
+
+
+
